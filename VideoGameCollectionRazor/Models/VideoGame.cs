@@ -1,10 +1,19 @@
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace VideoGameCollection.Models
 {
     public class VideoGame
     {
         public int Id { get; set; }
+
+        // Associazione all'utente
+        [Required]
+        public int UserId { get; set; }
+
+        // Navigational property opzionale per l'User (se serve)
+        // [ForeignKey("UserId")]
+        // public User? User { get; set; }
 
         [Required(ErrorMessage = "Il titolo è obbligatorio")]
         [StringLength(200)]
@@ -30,6 +39,10 @@ namespace VideoGameCollection.Models
 
         [Display(Name = "Note")]
         public string? Notes { get; set; }
+
+        [Required(ErrorMessage = "Lo stato è obbligatorio")]
+        [Display(Name = "Stato")]
+        public string Status { get; set; } = "Da Giocare"; // Da Giocare, In Corso, Completato, Abbandonato
 
         // ID esterno da RAWG (per evitare duplicati)
         public int? ExternalId { get; set; }

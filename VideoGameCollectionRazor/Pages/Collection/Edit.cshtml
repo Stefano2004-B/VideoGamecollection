@@ -45,15 +45,28 @@
                 </div>
 
                 <div class="form-group">
-                    <label asp-for="Game.PersonalScore">⭐ Voto (1-10) *</label>
-                    <input asp-for="Game.PersonalScore" type="number" min="1" max="10" class="form-control" />
-                    <span asp-validation-for="Game.PersonalScore" class="field-error"></span>
+                    <label asp-for="Game.Status">📌 Stato *</label>
+                    <select asp-for="Game.Status" class="form-control">
+                        <option value="Da Giocare" selected="@(Model.Game.Status == "Da Giocare")">Da Giocare</option>
+                        <option value="In Corso" selected="@(Model.Game.Status == "In Corso")">In Corso</option>
+                        <option value="Completato" selected="@(Model.Game.Status == "Completato")">Completato</option>
+                        <option value="Abbandonato" selected="@(Model.Game.Status == "Abbandonato")">Abbandonato</option>
+                    </select>
+                    <span asp-validation-for="Game.Status" class="field-error"></span>
                 </div>
             </div>
 
-            <div class="form-group">
-                <label asp-for="Game.Genre">🏷️ Genere</label>
-                <input asp-for="Game.Genre" class="form-control" />
+            <div class="form-row">
+                <div class="form-group">
+                    <label asp-for="Game.PersonalScore">⭐ Voto (1-10) *</label>
+                    <input asp-for="Game.PersonalScore" type="number" min="1" max="10" class="form-control" onfocus="this.select()" />
+                    <span asp-validation-for="Game.PersonalScore" class="field-error"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="Game.Genre">🏷️ Genere</label>
+                    <input asp-for="Game.Genre" class="form-control" />
+                </div>
             </div>
 
             <div class="form-group">

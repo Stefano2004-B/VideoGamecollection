@@ -19,11 +19,13 @@ namespace VideoGameCollection.Pages.Collection
 
         public async Task<IActionResult> OnGetAsync(int id)
         {
-            if (HttpContext.Session.GetString("Username") == null)
+            var userId = HttpContext.Session.GetInt32("UserId");
+            if (userId == null)
                 return RedirectToPage("/Account/Login");
 
             var game = await _db.VideoGames.FindAsync(id);
-            if (game == null) return NotFound();
+            if (game == null || game.UserId != userId.Value) 
+                return NotFound();
 
             Game = game;
             return Page();
@@ -34,7 +36,22 @@ namespace VideoGameCollection.Pages.Collection
             if (!ModelState.IsValid)
                 return Page();
 
-            _db.VideoGames.Update(Game);
+            var userId = HttpContext.Session.GetInt32("UserId");
+            if (userId == null)
+                return RedirectToPage("/Account/Login");
+
+            var gameFromDb = await _db.VideoGames.FindAsync(Game.Id);
+            if (gameFromDb == null || gameFromDb.UserId != userId.Value)
+                return NotFound();
+
+            // Aggiorna solo i campi permessi
+            gameFromDb.Title = Game.Title;
+            gameFromDb.Platform = Game.Platform;
+            gameFromDb.PersonalScore = Game.PersonalScore;
+            gameFromDb.Genre = Game.Genre;
+            gameFromDb.Notes = Game.Notes;
+            gameFromDb.Status = Game.Status;
+            
             await _db.SaveChangesAsync();
             TempData["Success"] = $"'{Game.Title}' aggiornato!";
             return RedirectToPage("/Collection/Index");

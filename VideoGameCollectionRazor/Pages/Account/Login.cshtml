@@ -69,7 +69,9 @@
                             <input asp-for="Input.Password"
                                    class="form-control"
                                    placeholder="••••••••"
-                                   autocomplete="current-password" />
+                                   autocomplete="current-password"
+                                   id="login-password" />
+                            <button type="button" class="password-toggle" onclick="togglePassword('login-password', this)">👁️</button>
                         </div>
                         <span asp-validation-for="Input.Password" class="field-error"></span>
                     </div>
@@ -95,5 +97,17 @@
 
         </div>
     </main>
+    <script>
+        function togglePassword(inputId, btn) {
+            var input = document.getElementById(inputId);
+            if (input.type === "password") {
+                input.type = "text";
+                btn.textContent = "🙈";
+            } else {
+                input.type = "password";
+                btn.textContent = "👁️";
+            }
+        }
+    </script>
 </body>
 </html>

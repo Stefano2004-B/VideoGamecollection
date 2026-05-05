@@ -28,6 +28,14 @@
         }
     </select>
 
+    <select name="status" class="filter-select">
+        <option value="">Tutti gli stati</option>
+        <option value="Da Giocare" selected="@(Model.Status == "Da Giocare")">Da Giocare</option>
+        <option value="In Corso" selected="@(Model.Status == "In Corso")">In Corso</option>
+        <option value="Completato" selected="@(Model.Status == "Completato")">Completato</option>
+        <option value="Abbandonato" selected="@(Model.Status == "Abbandonato")">Abbandonato</option>
+    </select>
+
     <select name="sort" class="filter-select">
         <option value="" selected="@(Model.Sort == null)">Più recenti</option>
         <option value="score_desc" selected="@(Model.Sort == "score_desc")">Voto ↓</option>
@@ -36,7 +44,7 @@
     </select>
 
     <button type="submit" class="btn btn-secondary">Filtra</button>
-    @if (Model.Search != null || Model.Platform != null)
+    @if (Model.Search != null || Model.Platform != null || Model.Status != null)
     {
         <a asp-page="/Collection/Index" class="btn btn-ghost">✕ Reset</a>
     }
@@ -63,7 +71,8 @@ else
                 <div class="game-cover">
                     @if (!string.IsNullOrEmpty(game.ImageUrl))
                     {
-                        <img src="@game.ImageUrl" alt="@game.Title" loading="lazy" />
+                        <img src="@game.ImageUrl" alt="@game.Title" loading="lazy" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+                        <div class="cover-placeholder" style="display: none;">🎮</div>
                     }
                     else
                     {
@@ -77,6 +86,10 @@ else
                     <h3 class="game-title">@game.Title</h3>
                     <div class="game-meta">
                         <span class="platform-tag">@game.Platform</span>
+                        @if (!string.IsNullOrEmpty(game.Status))
+                        {
+                            <span class="status-tag status-@(game.Status.Replace(" ", "").ToLower())">@game.Status</span>
+                        }
                         @if (!string.IsNullOrEmpty(game.Genre))
                         {
                             <span class="genre-tag">@game.Genre</span>

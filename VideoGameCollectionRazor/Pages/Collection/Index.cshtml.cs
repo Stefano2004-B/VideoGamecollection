@@ -29,18 +29,25 @@ namespace VideoGameCollection.Pages.Collection
         [BindProperty(SupportsGet = true)]
         public string? Sort { get; set; }
 
+        [BindProperty(SupportsGet = true)]
+        public string? Status { get; set; }
+
         public async Task<IActionResult> OnGetAsync()
         {
-            if (HttpContext.Session.GetString("Username") == null)
+            var userId = HttpContext.Session.GetInt32("UserId");
+            if (userId == null)
                 return RedirectToPage("/Account/Login", new { returnUrl = "/Collection/Index" });
 
-            var query = _db.VideoGames.AsQueryable();
+            var query = _db.VideoGames.Where(g => g.UserId == userId.Value).AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(Search))
                 query = query.Where(g => g.Title.Contains(Search));
 
             if (!string.IsNullOrWhiteSpace(Platform))
                 query = query.Where(g => g.Platform == Platform);
+
+            if (!string.IsNullOrWhiteSpace(Status))
+                query = query.Where(g => g.Status == Status);
 
             query = Sort switch
             {
@@ -51,10 +58,12 @@ namespace VideoGameCollection.Pages.Collection
             };
 
             Games     = await query.ToListAsync();
-            Platforms = await _db.VideoGames.Select(g => g.Platform).Distinct().ToListAsync();
-            TotalGames = await _db.VideoGames.CountAsync();
-            AvgScore  = _db.VideoGames.Any()
-                ? Math.Round(await _db.VideoGames.AverageAsync(g => g.PersonalScore), 1)
+            
+            var userGames = _db.VideoGames.Where(g => g.UserId == userId.Value);
+            Platforms = await userGames.Select(g => g.Platform).Distinct().ToListAsync();
+            TotalGames = await userGames.CountAsync();
+            AvgScore  = await userGames.AnyAsync()
+                ? Math.Round(await userGames.AverageAsync(g => g.PersonalScore), 1)
                 : 0;
 
             return Page();
@@ -63,8 +72,12 @@ namespace VideoGameCollection.Pages.Collection
         // Handler per la cancellazione — POST /Collection/Index?handler=Delete
         public async Task<IActionResult> OnPostDeleteAsync(int id)
         {
+            var userId = HttpContext.Session.GetInt32("UserId");
+            if (userId == null)
+                return RedirectToPage("/Account/Login");
+
             var game = await _db.VideoGames.FindAsync(id);
-            if (game == null) return NotFound();
+            if (game == null || game.UserId != userId.Value) return NotFound();
 
             _db.VideoGames.Remove(game);
             await _db.SaveChangesAsync();

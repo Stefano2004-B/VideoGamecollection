@@ -30,6 +30,11 @@ namespace VideoGameCollection.Pages.Collection
             if (!ModelState.IsValid)
                 return Page();
 
+            var userId = HttpContext.Session.GetInt32("UserId");
+            if (userId == null)
+                return RedirectToPage("/Account/Login");
+
+            Game.UserId = userId.Value;
             Game.AddedDate = DateTime.Now;
             _db.VideoGames.Add(Game);
             await _db.SaveChangesAsync();

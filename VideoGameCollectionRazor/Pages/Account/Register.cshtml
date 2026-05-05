@@ -76,7 +76,9 @@
                             <input asp-for="Input.Password"
                                    class="form-control"
                                    placeholder="Almeno 6 caratteri"
-                                   autocomplete="new-password" />
+                                   autocomplete="new-password"
+                                   id="register-password" />
+                            <button type="button" class="password-toggle" onclick="togglePassword('register-password', this)">👁️</button>
                         </div>
                         <span asp-validation-for="Input.Password" class="field-error"></span>
                     </div>
@@ -89,7 +91,9 @@
                             <input asp-for="Input.ConfirmPassword"
                                    class="form-control"
                                    placeholder="Ripeti la password"
-                                   autocomplete="new-password" />
+                                   autocomplete="new-password"
+                                   id="register-confirm-password" />
+                            <button type="button" class="password-toggle" onclick="togglePassword('register-confirm-password', this)">👁️</button>
                         </div>
                         <span asp-validation-for="Input.ConfirmPassword" class="field-error"></span>
                     </div>
@@ -109,5 +113,17 @@
 
         </div>
     </main>
+    <script>
+        function togglePassword(inputId, btn) {
+            var input = document.getElementById(inputId);
+            if (input.type === "password") {
+                input.type = "text";
+                btn.textContent = "🙈";
+            } else {
+                input.type = "password";
+                btn.textContent = "👁️";
+            }
+        }
+    </script>
 </body>
 </html>

@@ -1,0 +1,162 @@
+@page
+@model VideoGameCollection.Pages.Home.SearchModel
+@{
+    ViewData["Title"] = "Cerca Giochi";
+    int currentPage = Model.CurrentPage;
+    int totalPages  = Model.TotalPages;
+    string query    = Model.Q ?? "";
+}
+
+<div class="page-header">
+    <div>
+        <h1>🔍 Cerca Nuovi Giochi</h1>
+        <p class="page-subtitle">Powered by <strong>RAWG.io</strong> — oltre 500.000 giochi nel database</p>
+    </div>
+</div>
+
+<div class="search-hero">
+    <form method="get" class="search-form-large">
+        <input type="text" name="q" value="@query"
+               placeholder="Cerca un gioco... Es: Elden Ring, Zelda, GTA..."
+               class="search-input-large" autofocus />
+        <button type="submit" class="btn btn-primary btn-lg">Cerca</button>
+    </form>
+</div>
+
+@if (Model.Error != null)
+{
+    <div class="alert alert-error">❌ @Model.Error</div>
+}
+
+@if (Model.Q != null && Model.Result != null)
+{
+    <div class="search-results-header">
+        <p>
+            Trovati <strong>@Model.Result.Count</strong> risultati per "<em>@query</em>"
+            @if (totalPages > 1)
+            {
+                <span> — Pagina <strong>@currentPage</strong> di <strong>@totalPages</strong></span>
+            }
+        </p>
+    </div>
+
+    if (!Model.Result.Results.Any())
+    {
+        <div class="empty-state">
+            <div class="empty-icon">🔍</div>
+            <h2>Nessun gioco trovato</h2>
+            <p>Prova con un termine di ricerca diverso.</p>
+        </div>
+    }
+    else
+    {
+        <div class="games-grid">
+            @foreach (var game in Model.Result.Results)
+            {
+                var firstPlatform = game.Platforms?.FirstOrDefault()?.Platform?.Name ?? "N/A";
+                var allPlatforms  = string.Join(", ", game.Platforms?.Select(p => p.Platform?.Name ?? "") ?? Array.Empty<string>());
+                var genre         = game.Genres?.FirstOrDefault()?.Name;
+
+                <div class="game-card game-card-search">
+                    <div class="game-cover">
+                        @if (!string.IsNullOrEmpty(game.Background_Image))
+                        {
+                            <img src="@game.Background_Image" alt="@game.Name" loading="lazy" />
+                        }
+                        else
+                        {
+                            <div class="cover-placeholder">🎮</div>
+                        }
+                        @if (game.Rating > 0)
+                        {
+                            <div class="score-badge score-mid" title="Voto RAWG">
+                                ★ @game.Rating?.ToString("F1")
+                            </div>
+                        }
+                    </div>
+                    <div class="game-info">
+                        <h3 class="game-title">@game.Name</h3>
+                        <div class="game-meta">
+                            @if (!string.IsNullOrEmpty(allPlatforms))
+                            {
+                                <span class="platform-tag" title="@allPlatforms">@firstPlatform</span>
+                            }
+                            @if (!string.IsNullOrEmpty(genre))
+                            {
+                                <span class="genre-tag">@genre</span>
+                            }
+                            @if (!string.IsNullOrEmpty(game.Released))
+                            {
+                                <span class="year-tag">📅 @game.Released[..4]</span>
+                            }
+                        </div>
+                        <!-- Form POST verso la Razor Page AddFromSearch -->
+                        <form asp-page="/Collection/AddFromSearch" method="post" class="add-form">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="externalId"  value="@game.Id" />
+                            <input type="hidden" name="title"       value="@game.Name" />
+                            <input type="hidden" name="platform"    value="@firstPlatform" />
+                            <input type="hidden" name="genre"       value="@genre" />
+                            <input type="hidden" name="imageUrl"    value="@game.Background_Image" />
+                            <button type="submit" class="btn btn-primary btn-full">
+                                ➕ Aggiungi alla Collezione
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            }
+        </div>
+
+        @if (totalPages > 1)
+        {
+            <div class="pagination">
+                @if (currentPage > 1)
+                {
+                    <a href="?q=@Uri.EscapeDataString(query)&page=@(currentPage - 1)" class="btn btn-secondary">← Precedente</a>
+                }
+                @{
+                    int startPage = Math.Max(1, currentPage - 2);
+                    int endPage   = Math.Min(totalPages, currentPage + 2);
+                }
+                @for (int p = startPage; p <= endPage; p++)
+                {
+                    if (p == currentPage)
+                    {
+                        <span class="btn btn-primary page-btn-active">@p</span>
+                    }
+                    else
+                    {
+                        <a href="?q=@Uri.EscapeDataString(query)&page=@p" class="btn btn-ghost">@p</a>
+                    }
+                }
+                @if (currentPage < totalPages)
+                {
+                    <a href="?q=@Uri.EscapeDataString(query)&page=@(currentPage + 1)" class="btn btn-secondary">Successiva →</a>
+                }
+            </div>
+        }
+    }
+}
+else if (Model.Q == null)
+{
+    <div class="search-tips">
+        <h2>💡 Come funziona</h2>
+        <div class="tips-grid">
+            <div class="tip-card">
+                <div class="tip-icon">🔍</div>
+                <h3>Cerca</h3>
+                <p>Inserisci il titolo del gioco che cerchi</p>
+            </div>
+            <div class="tip-card">
+                <div class="tip-icon">➕</div>
+                <h3>Aggiungi</h3>
+                <p>Clicca "Aggiungi alla Collezione" con un click</p>
+            </div>
+            <div class="tip-card">
+                <div class="tip-icon">⭐</div>
+                <h3>Valuta</h3>
+                <p>Modifica il voto e aggiungi le tue note</p>
+            </div>
+        </div>
+    </div>
+}

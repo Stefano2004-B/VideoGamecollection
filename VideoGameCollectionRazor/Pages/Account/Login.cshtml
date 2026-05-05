@@ -1,0 +1,99 @@
+@page
+@model VideoGameCollection.Pages.Account.LoginModel
+@{
+    ViewData["Title"] = "Accedi";
+    Layout = null; // pagina standalone senza navbar
+}
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Accedi — La Mia Collezione</title>
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <main class="login-page">
+        <div class="login-container">
+
+            <!-- Brand -->
+            <div class="login-brand">
+                <span class="login-brand-icon">🎮</span>
+                <h1>La Mia Collezione</h1>
+                <p>Gestisci la tua libreria di videogiochi</p>
+            </div>
+
+            <!-- Card login -->
+            <div class="login-card">
+                <h2>Accedi al tuo account</h2>
+
+                @if (!ViewData.ModelState.IsValid)
+                {
+                    <div class="alert alert-error">
+                        ❌
+                        @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                        {
+                            @error.ErrorMessage
+                        }
+                    </div>
+                }
+
+                <form method="post">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="ReturnUrl" value="@Model.ReturnUrl" />
+
+                    <!-- Username -->
+                    <div class="form-group">
+                        <label asp-for="Input.Username"></label>
+                        <div class="input-group">
+                            <span class="input-icon">👤</span>
+                            <input asp-for="Input.Username"
+                                   class="form-control"
+                                   placeholder="Il tuo nome utente"
+                                   autocomplete="username"
+                                   autofocus />
+                        </div>
+                        <span asp-validation-for="Input.Username" class="field-error"></span>
+                    </div>
+
+                    <!-- Password -->
+                    <div class="form-group">
+                        <div class="form-label-row">
+                            <label asp-for="Input.Password"></label>
+                            <a href="#">Password dimenticata?</a>
+                        </div>
+                        <div class="input-group">
+                            <span class="input-icon">🔒</span>
+                            <input asp-for="Input.Password"
+                                   class="form-control"
+                                   placeholder="••••••••"
+                                   autocomplete="current-password" />
+                        </div>
+                        <span asp-validation-for="Input.Password" class="field-error"></span>
+                    </div>
+
+                    <!-- Ricordami -->
+                    <label class="remember-row">
+                        <input asp-for="Input.RememberMe" type="checkbox" />
+                        Ricordami su questo dispositivo
+                    </label>
+
+                    <button type="submit" class="btn btn-primary btn-full btn-lg">
+                        Accedi →
+                    </button>
+                </form>
+
+                <div class="login-divider">oppure</div>
+
+                <div class="login-register">
+                    Non hai un account?
+                    <a asp-page="/Account/Register">Registrati gratuitamente</a>
+                </div>
+            </div>
+
+        </div>
+    </main>
+</body>
+</html>

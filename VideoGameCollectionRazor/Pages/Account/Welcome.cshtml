@@ -1,0 +1,99 @@
+@page
+@model VideoGameCollection.Pages.Account.WelcomeModel
+@{
+    ViewData["Title"] = "Benvenuto";
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Benvenuto — La Mia Collezione</title>
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        .welcome-page {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, var(--bg) 0%, var(--surface) 100%);
+        }
+        .welcome-container {
+            text-align: center;
+            padding: 3rem 2rem;
+            max-width: 520px;
+            width: 100%;
+        }
+        .welcome-icon {
+            font-size: 5rem;
+            display: block;
+            margin-bottom: 1.5rem;
+            animation: bounce 0.8s ease;
+        }
+        @@keyframes bounce {
+            0%   { transform: scale(0.5); opacity: 0; }
+            70%  { transform: scale(1.15); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .welcome-title { font-size: 2.2rem; font-weight: 700; color: var(--text); margin-bottom: 0.5rem; }
+        .welcome-title span { color: var(--primary); }
+        .welcome-subtitle { color: var(--muted); font-size: 1.1rem; margin-bottom: 2.5rem; }
+        .welcome-card { background: var(--surface); border: 1px solid var(--border); border-radius: 1rem; padding: 2rem; margin-bottom: 2rem; text-align: left; }
+        .welcome-card h3 { font-size: 1rem; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 1rem; }
+        .welcome-features { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 0.75rem; }
+        .welcome-features li { display: flex; align-items: center; gap: 0.75rem; color: var(--text); font-size: 0.95rem; }
+        .welcome-features li span:first-child { font-size: 1.3rem; }
+        .welcome-cta { display: inline-flex; align-items: center; gap: 0.5rem; background: var(--primary); color: #fff; border: none; border-radius: 0.6rem; padding: 0.85rem 2rem; font-size: 1rem; font-weight: 600; cursor: pointer; text-decoration: none; transition: opacity 0.2s, transform 0.1s; width: 100%; justify-content: center; }
+        .welcome-cta:hover { opacity: 0.88; transform: translateY(-1px); }
+        .countdown { margin-top: 1.2rem; font-size: 0.85rem; color: var(--muted); }
+    </style>
+</head>
+<body>
+    <main class="welcome-page">
+        <div class="welcome-container">
+
+            <span class="welcome-icon">🎮</span>
+
+            <h1 class="welcome-title">
+                Bentornato, <span>@Model.Username</span>!
+            </h1>
+            <p class="welcome-subtitle">Pronto a gestire la tua collezione di videogiochi?</p>
+
+            <div class="welcome-card">
+                <h3>Cosa puoi fare</h3>
+                <ul class="welcome-features">
+                    <li><span>📚</span> <span>Visualizza e gestisci la tua collezione personale</span></li>
+                    <li><span>🔍</span> <span>Cerca nuovi giochi dal catalogo RAWG</span></li>
+                    <li><span>⭐</span> <span>Assegna un voto personale ai tuoi titoli</span></li>
+                    <li><span>✏️</span> <span>Modifica o rimuovi giochi dalla libreria</span></li>
+                </ul>
+            </div>
+
+            <a asp-page="/Collection/Index" class="welcome-cta">
+                Vai alla mia collezione →
+            </a>
+
+            <p class="countdown" id="countdown">
+                Reindirizzamento automatico tra <strong id="sec">5</strong> secondi…
+            </p>
+
+        </div>
+    </main>
+
+    <script>
+        let s = 5;
+        const el = document.getElementById('sec');
+        const timer = setInterval(() => {
+            s--;
+            el.textContent = s;
+            if (s <= 0) {
+                clearInterval(timer);
+                window.location.href = '/Collection/Index';
+            }
+        }, 1000);
+    </script>
+</body>
+</html>

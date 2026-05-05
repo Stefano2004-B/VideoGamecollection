@@ -1,0 +1,102 @@
+@page
+@model VideoGameCollection.Pages.Collection.IndexModel
+@{
+    ViewData["Title"] = "La Mia Collezione";
+}
+
+<div class="page-header">
+    <div>
+        <h1>📚 La Mia Collezione</h1>
+        <p class="page-subtitle">
+            <strong>@Model.TotalGames</strong> giochi • Voto medio:
+            <strong>@Model.AvgScore/10</strong>
+        </p>
+    </div>
+    <a asp-page="/Collection/Create" class="btn btn-primary">+ Aggiungi Manuale</a>
+</div>
+
+<!-- Filtri -->
+<form method="get" class="filter-bar">
+    <input type="text" name="search" value="@Model.Search"
+           placeholder="🔍 Cerca nella collezione..." class="filter-input" />
+
+    <select name="platform" class="filter-select">
+        <option value="">Tutte le piattaforme</option>
+        @foreach (var p in Model.Platforms)
+        {
+            <option value="@p" selected="@(Model.Platform == p)">@p</option>
+        }
+    </select>
+
+    <select name="sort" class="filter-select">
+        <option value="" selected="@(Model.Sort == null)">Più recenti</option>
+        <option value="score_desc" selected="@(Model.Sort == "score_desc")">Voto ↓</option>
+        <option value="score_asc" selected="@(Model.Sort == "score_asc")">Voto ↑</option>
+        <option value="title" selected="@(Model.Sort == "title")">Titolo A-Z</option>
+    </select>
+
+    <button type="submit" class="btn btn-secondary">Filtra</button>
+    @if (Model.Search != null || Model.Platform != null)
+    {
+        <a asp-page="/Collection/Index" class="btn btn-ghost">✕ Reset</a>
+    }
+</form>
+
+@if (!Model.Games.Any())
+{
+    <div class="empty-state">
+        <div class="empty-icon">🎮</div>
+        <h2>La collezione è vuota!</h2>
+        <p>Inizia cercando nuovi giochi o aggiungili manualmente.</p>
+        <div class="empty-actions">
+            <a asp-page="/Home/Search" class="btn btn-primary">🔍 Cerca Giochi</a>
+            <a asp-page="/Collection/Create" class="btn btn-secondary">+ Aggiungi Manuale</a>
+        </div>
+    </div>
+}
+else
+{
+    <div class="games-grid">
+        @foreach (var game in Model.Games)
+        {
+            <div class="game-card">
+                <div class="game-cover">
+                    @if (!string.IsNullOrEmpty(game.ImageUrl))
+                    {
+                        <img src="@game.ImageUrl" alt="@game.Title" loading="lazy" />
+                    }
+                    else
+                    {
+                        <div class="cover-placeholder">🎮</div>
+                    }
+                    <div class="score-badge score-@(game.PersonalScore >= 8 ? "high" : game.PersonalScore >= 5 ? "mid" : "low")">
+                        @game.PersonalScore/10
+                    </div>
+                </div>
+                <div class="game-info">
+                    <h3 class="game-title">@game.Title</h3>
+                    <div class="game-meta">
+                        <span class="platform-tag">@game.Platform</span>
+                        @if (!string.IsNullOrEmpty(game.Genre))
+                        {
+                            <span class="genre-tag">@game.Genre</span>
+                        }
+                    </div>
+                    @if (!string.IsNullOrEmpty(game.Notes))
+                    {
+                        <p class="game-notes">@game.Notes</p>
+                    }
+                    <div class="game-actions">
+                        <a asp-page="/Collection/Edit" asp-route-id="@game.Id" class="btn btn-sm">✏️ Modifica</a>
+                        <form asp-page="/Collection/Index" asp-page-handler="Delete" method="post"
+                              onsubmit="return confirm('Rimuovere @game.Title dalla collezione?')">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="id" value="@game.Id" />
+                            <button type="submit" class="btn btn-sm btn-danger">🗑️</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}

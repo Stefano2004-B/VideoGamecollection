@@ -1,0 +1,113 @@
+@page
+@model VideoGameCollection.Pages.Account.RegisterModel
+@{
+    ViewData["Title"] = "Registrati";
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Registrati — La Mia Collezione</title>
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <main class="login-page">
+        <div class="login-container">
+
+            <div class="login-brand">
+                <span class="login-brand-icon">🎮</span>
+                <h1>La Mia Collezione</h1>
+                <p>Crea il tuo account gratuito</p>
+            </div>
+
+            <div class="login-card">
+                <h2>Crea un account</h2>
+
+                @if (!ViewData.ModelState.IsValid && ViewData.ModelState.Values.Any(v => v.Errors.Any()))
+                {
+                    <div class="alert alert-error">
+                        ❌
+                        @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                        {
+                            <div>@error.ErrorMessage</div>
+                        }
+                    </div>
+                }
+
+                <form method="post">
+                    @Html.AntiForgeryToken()
+
+                    <!-- Username -->
+                    <div class="form-group">
+                        <label asp-for="Input.Username"></label>
+                        <div class="input-group">
+                            <span class="input-icon">👤</span>
+                            <input asp-for="Input.Username"
+                                   class="form-control"
+                                   placeholder="Scegli un nome utente"
+                                   autocomplete="username"
+                                   autofocus />
+                        </div>
+                        <span asp-validation-for="Input.Username" class="field-error"></span>
+                    </div>
+
+                    <!-- Email -->
+                    <div class="form-group">
+                        <label asp-for="Input.Email"></label>
+                        <div class="input-group">
+                            <span class="input-icon">✉️</span>
+                            <input asp-for="Input.Email"
+                                   class="form-control"
+                                   placeholder="La tua email"
+                                   autocomplete="email" />
+                        </div>
+                        <span asp-validation-for="Input.Email" class="field-error"></span>
+                    </div>
+
+                    <!-- Password -->
+                    <div class="form-group">
+                        <label asp-for="Input.Password"></label>
+                        <div class="input-group">
+                            <span class="input-icon">🔒</span>
+                            <input asp-for="Input.Password"
+                                   class="form-control"
+                                   placeholder="Almeno 6 caratteri"
+                                   autocomplete="new-password" />
+                        </div>
+                        <span asp-validation-for="Input.Password" class="field-error"></span>
+                    </div>
+
+                    <!-- Conferma Password -->
+                    <div class="form-group">
+                        <label asp-for="Input.ConfirmPassword"></label>
+                        <div class="input-group">
+                            <span class="input-icon">🔒</span>
+                            <input asp-for="Input.ConfirmPassword"
+                                   class="form-control"
+                                   placeholder="Ripeti la password"
+                                   autocomplete="new-password" />
+                        </div>
+                        <span asp-validation-for="Input.ConfirmPassword" class="field-error"></span>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-full btn-lg" style="margin-top:8px;">
+                        Crea account →
+                    </button>
+                </form>
+
+                <div class="login-divider">oppure</div>
+
+                <div class="login-register">
+                    Hai già un account?
+                    <a asp-page="/Account/Login">Accedi</a>
+                </div>
+            </div>
+
+        </div>
+    </main>
+</body>
+</html>

@@ -1,0 +1,70 @@
+@page "{id:int}"
+@model VideoGameCollection.Pages.Collection.EditModel
+@{
+    ViewData["Title"] = "Modifica " + Model.Game.Title;
+    var platforms = new[] { "PC", "PlayStation 5", "PlayStation 4", "Xbox Series X/S", "Xbox One", "Nintendo Switch", "iOS", "Android", "Altro" };
+}
+
+<div class="form-page">
+    <div class="form-header">
+        <a asp-page="/Collection/Index" class="back-link">← Torna alla collezione</a>
+        <h1>✏️ Modifica Gioco</h1>
+    </div>
+
+    <div class="form-card">
+        @if (!string.IsNullOrEmpty(Model.Game.ImageUrl))
+        {
+            <div class="edit-cover-preview">
+                <img src="@Model.Game.ImageUrl" alt="@Model.Game.Title" />
+            </div>
+        }
+
+        <form method="post">
+            @Html.AntiForgeryToken()
+            <input asp-for="Game.Id" type="hidden" />
+            <input asp-for="Game.ExternalId" type="hidden" />
+            <input asp-for="Game.AddedDate" type="hidden" />
+            <input asp-for="Game.ImageUrl" type="hidden" />
+
+            <div class="form-group">
+                <label asp-for="Game.Title">🎮 Titolo *</label>
+                <input asp-for="Game.Title" class="form-control" />
+                <span asp-validation-for="Game.Title" class="field-error"></span>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label asp-for="Game.Platform">🖥️ Piattaforma *</label>
+                    <select asp-for="Game.Platform" class="form-control">
+                        @foreach (var p in platforms)
+                        {
+                            <option value="@p" selected="@(Model.Game.Platform == p)">@p</option>
+                        }
+                    </select>
+                    <span asp-validation-for="Game.Platform" class="field-error"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="Game.PersonalScore">⭐ Voto (1-10) *</label>
+                    <input asp-for="Game.PersonalScore" type="number" min="1" max="10" class="form-control" />
+                    <span asp-validation-for="Game.PersonalScore" class="field-error"></span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Game.Genre">🏷️ Genere</label>
+                <input asp-for="Game.Genre" class="form-control" />
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Game.Notes">📝 Note personali</label>
+                <textarea asp-for="Game.Notes" class="form-control" rows="4"></textarea>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">💾 Salva Modifiche</button>
+                <a asp-page="/Collection/Index" class="btn btn-ghost">Annulla</a>
+            </div>
+        </form>
+    </div>
+</div>

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] — La Mia Collezione</title>
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="/Collection/Index" class="nav-brand">
+                <span class="brand-icon">🎮</span>
+                <span>La Mia Collezione</span>
+            </a>
+            <div class="nav-links">
+                <a asp-page="/Collection/Index" class="nav-link">
+                    📚 Collezione
+                </a>
+                <a asp-page="/Home/Search" class="nav-link nav-link-cta">
+                    🔍 Cerca Giochi
+                </a>
+                @if (Context.Session.GetString("Username") != null)
+                {
+                    <span class="nav-link" style="color:var(--muted); cursor:default;">
+                        👤 @Context.Session.GetString("Username")
+                    </span>
+                    <form asp-page="/Account/Logout" method="post" style="display:inline;">
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="btn btn-ghost btn-sm">Esci</button>
+                    </form>
+                }
+                else
+                {
+                    <a asp-page="/Account/Login" class="nav-link">
+                        🔑 Accedi
+                    </a>
+                }
+            </div>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        @if (TempData["Success"] != null)
+        {
+            <div class="alert alert-success">✅ @TempData["Success"]</div>
+        }
+        @if (TempData["Warning"] != null)
+        {
+            <div class="alert alert-warning">⚠️ @TempData["Warning"]</div>
+        }
+
+        @RenderBody()
+    </main>
+
+    <footer class="footer">
+        <p>🎮 La Mia Collezione di Videogiochi • Dati da <a href="https://rawg.io" target="_blank">RAWG API</a></p>
+    </footer>
+
+    <script src="~/js/site.js" asp-append-version="true"></script>
+</body>
+</html>
